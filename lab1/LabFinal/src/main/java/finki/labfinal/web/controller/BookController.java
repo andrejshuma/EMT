@@ -137,6 +137,16 @@ public class BookController {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found"));
     }
 
+    /**
+     * Rent a book (decrease available copies by 1) and publish an event on success.
+     */
+    @PostMapping("/{id}/rent")
+    public ResponseEntity<DisplayBookDTO> rentBook(@PathVariable Long id) {
+        return bookAppService.rent(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<DisplayBookDTO> deleteBook(@PathVariable Long id) {
         return bookAppService.deleteById(id)

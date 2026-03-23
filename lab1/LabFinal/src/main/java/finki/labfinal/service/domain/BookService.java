@@ -22,5 +22,12 @@ public interface BookService {
 
     Optional<Book> update(Long id, Book book);
 
+    /**
+     * Rent a book (decrease available copies by 1).
+     *
+     * @return updated book
+     */
+    Optional<Book> rent(Long id);
+
     Optional<Book> deleteById(Long id);
 }

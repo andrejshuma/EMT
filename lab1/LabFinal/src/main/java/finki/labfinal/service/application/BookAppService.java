@@ -23,5 +23,10 @@ public interface BookAppService {
 
     Optional<DisplayBookDTO> update(Long id, CreateBookDTO book);
 
+    /**
+     * Rent a book (decrease available copies by 1).
+     */
+    Optional<DisplayBookDTO> rent(Long id);
+
     Optional<DisplayBookDTO> deleteById(Long id);
 }

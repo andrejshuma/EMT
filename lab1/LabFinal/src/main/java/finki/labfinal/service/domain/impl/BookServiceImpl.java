@@ -1,15 +1,19 @@
 package finki.labfinal.service.domain.impl;
 
 import finki.labfinal.model.domain.Book;
+import finki.labfinal.model.event.BookRentedEvent;
+import finki.labfinal.model.exception.ResourceNotFoundException;
 import finki.labfinal.repository.BookRepository;
 import finki.labfinal.repository.spec.BookSpecifications;
 import finki.labfinal.service.domain.BookService;
 import finki.labfinal.web.dto.BookSearchRequest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +22,11 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    public BookServiceImpl(BookRepository bookRepository) {
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public BookServiceImpl(BookRepository bookRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.bookRepository = bookRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -65,6 +72,29 @@ public class BookServiceImpl implements BookService {
                     b.setAvailableCopies(book.getAvailableCopies());
                     return bookRepository.save(b);
                 });
+    }
+
+    @Override
+    public Optional<Book> rent(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found"));
+
+        int current = book.getAvailableCopies() == null ? 0 : book.getAvailableCopies();
+        if (current <= 0) {
+            return Optional.empty();
+        }
+
+        book.setAvailableCopies(current - 1);
+        Book saved = bookRepository.save(book);
+
+        applicationEventPublisher.publishEvent(new BookRentedEvent(
+                saved.getId(),
+                saved.getName(),
+                saved.getAvailableCopies() == null ? 0 : saved.getAvailableCopies(),
+                Instant.now()
+        ));
+
+        return Optional.of(saved);
     }
 
     @Override

@@ -56,6 +56,11 @@ public class BookAppServiceImpl implements BookAppService {
     }
 
     @Override
+    public Optional<DisplayBookDTO> rent(Long id) {
+        return bookService.rent(id).map(DisplayBookDTO::from);
+    }
+
+    @Override
     public Optional<DisplayBookDTO> deleteById(Long id) {
         return bookService.deleteById(id).map(DisplayBookDTO::from);
     }
