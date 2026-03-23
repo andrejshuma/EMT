@@ -4,6 +4,9 @@ import finki.labfinal.model.dto.CreateBookDTO;
 import finki.labfinal.model.dto.DisplayBookDTO;
 import finki.labfinal.service.application.BookAppService;
 import finki.labfinal.service.domain.BookService;
+import finki.labfinal.web.dto.BookSearchRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +27,22 @@ public class BookAppServiceImpl implements BookAppService {
     }
 
     @Override
+    public Optional<DisplayBookDTO> findByIdWithAuthorsAndCountry(Long id) {
+        return bookService.findByIdWithAuthorsAndCountry(id).map(DisplayBookDTO::from);
+    }
+
+    @Override
     public List<DisplayBookDTO> findAll() {
         return bookService.findAll()
                 .stream()
                 .map(DisplayBookDTO::from)
                 .toList();
+    }
+
+    @Override
+    public Page<DisplayBookDTO> search(BookSearchRequest request, Pageable pageable) {
+        return bookService.search(request, pageable)
+                .map(DisplayBookDTO::from);
     }
 
     @Override
