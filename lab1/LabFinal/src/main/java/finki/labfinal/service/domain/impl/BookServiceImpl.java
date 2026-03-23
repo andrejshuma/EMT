@@ -1,6 +1,7 @@
 package finki.labfinal.service.domain.impl;
 
 import finki.labfinal.model.domain.Book;
+import finki.labfinal.model.event.BookBecameUnavailableEvent;
 import finki.labfinal.model.event.BookRentedEvent;
 import finki.labfinal.model.exception.ResourceNotFoundException;
 import finki.labfinal.repository.BookRepository;
@@ -87,12 +88,23 @@ public class BookServiceImpl implements BookService {
         book.setAvailableCopies(current - 1);
         Book saved = bookRepository.save(book);
 
+        int remainingCopies = saved.getAvailableCopies() == null ? 0 : saved.getAvailableCopies();
+        Instant occurredAt = Instant.now();
+
         applicationEventPublisher.publishEvent(new BookRentedEvent(
                 saved.getId(),
                 saved.getName(),
-                saved.getAvailableCopies() == null ? 0 : saved.getAvailableCopies(),
-                Instant.now()
+                remainingCopies,
+                occurredAt
         ));
+
+        if (remainingCopies == 0) {
+            applicationEventPublisher.publishEvent(new BookBecameUnavailableEvent(
+                    saved.getId(),
+                    saved.getName(),
+                    occurredAt
+            ));
+        }
 
         return Optional.of(saved);
     }

@@ -1,7 +1,10 @@
 package finki.labfinal.service.application.listener;
 
 import finki.labfinal.model.domain.BookRentAudit;
+import finki.labfinal.model.domain.ActivityLogEntry;
+import finki.labfinal.model.enums.ActivityEventType;
 import finki.labfinal.model.event.BookRentedEvent;
+import finki.labfinal.repository.ActivityLogRepository;
 import finki.labfinal.repository.BookRentAuditRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +17,12 @@ public class BookRentedEventListener {
     private static final Logger log = LoggerFactory.getLogger(BookRentedEventListener.class);
 
     private final BookRentAuditRepository bookRentAuditRepository;
+    private final ActivityLogRepository activityLogRepository;
 
-    public BookRentedEventListener(BookRentAuditRepository bookRentAuditRepository) {
+    public BookRentedEventListener(BookRentAuditRepository bookRentAuditRepository,
+                                  ActivityLogRepository activityLogRepository) {
         this.bookRentAuditRepository = bookRentAuditRepository;
+        this.activityLogRepository = activityLogRepository;
     }
 
     @EventListener
@@ -36,6 +42,13 @@ public class BookRentedEventListener {
                 event.remainingCopies(),
                 event.occurredAt(),
                 message
+        ));
+
+        activityLogRepository.save(new ActivityLogEntry(
+                event.bookId(),
+                event.bookName(),
+                event.occurredAt(),
+                ActivityEventType.BOOK_RENTED
         ));
     }
 }
