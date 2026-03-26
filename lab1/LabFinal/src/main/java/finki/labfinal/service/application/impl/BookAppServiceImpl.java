@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,14 @@ public class BookAppServiceImpl implements BookAppService {
     @Override
     public Optional<DisplayBookDTO> rent(Long id) {
         return bookService.rent(id).map(DisplayBookDTO::from);
+    }
+
+    @Override
+    public List<DisplayBookDTO> findTop10PublishedBefore(LocalDate date) {
+        return bookService.findTop10PublishedBefore(date)
+                .stream()
+                .map(DisplayBookDTO::from)
+                .toList();
     }
 
     @Override

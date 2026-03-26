@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import finki.labfinal.web.dto.BookSearchRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,9 +42,7 @@ public class BookController {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found"));
     }
 
-    /**
-     * Uses EntityGraph to fetch Book together with authors and each author's country.
-     */
+
     @GetMapping("/{id}/with-authors")
     public ResponseEntity<DisplayBookDTO> getBookByIdWithAuthors(@PathVariable Long id) {
         return bookAppService.findByIdWithAuthorsAndCountry(id)
@@ -56,9 +55,6 @@ public class BookController {
         return ResponseEntity.ok(bookAppService.findAll());
     }
 
-    /**
-     * Projection-based endpoint (short view) - returns interface-based projection.
-     */
     @GetMapping("/projections/short")
     public ResponseEntity<Page<BookShortProjection>> listShortProjection(
             @RequestParam(defaultValue = "0") int page,
@@ -68,12 +64,6 @@ public class BookController {
         return ResponseEntity.ok(bookRepository.findAllProjectedBy(pageable));
     }
 
-    /**
-     * Projection-based endpoint (extended view) returning author full name and author country.
-     *
-     * Note: because Book->Author is many-to-many through BookAuth, this can return multiple
-     * rows per book if a book has multiple authors.
-     */
     @GetMapping("/projections/extended")
     public ResponseEntity<Page<BookExtendedProjection>> listExtendedProjection(
             @RequestParam(defaultValue = "0") int page,
@@ -84,13 +74,7 @@ public class BookController {
         return ResponseEntity.ok(bookRepository.findExtended(authorId, pageable));
     }
 
-    /**
-     * Search endpoint with pagination/sorting/filters.
-     *
-     * Sorting allowlist:
-     * - sortBy=name
-     * - sortBy=createdAt
-     */
+
     @GetMapping("/search")
     public ResponseEntity<Page<DisplayBookDTO>> search(
             @RequestParam(defaultValue = "0") int page,
@@ -122,6 +106,13 @@ public class BookController {
         return ResponseEntity.ok(bookAppService.search(request, pageable));
     }
 
+    @GetMapping("/findallbydatepublished")
+    public ResponseEntity<List<DisplayBookDTO>> findAllByDatePublished(
+            @RequestParam("before") LocalDate before
+    ) {
+        return ResponseEntity.ok(bookAppService.findTop10PublishedBefore(before));
+    }
+
     @PostMapping
     public ResponseEntity<DisplayBookDTO> createBook(@Valid @RequestBody CreateBookDTO bookDTO) {
         DisplayBookDTO created = bookAppService.create(bookDTO);
@@ -137,9 +128,7 @@ public class BookController {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id " + id + " not found"));
     }
 
-    /**
-     * Rent a book (decrease available copies by 1) and publish an event on success.
-     */
+
     @PostMapping("/{id}/rent")
     public ResponseEntity<DisplayBookDTO> rentBook(@PathVariable Long id) {
         return bookAppService.rent(id)

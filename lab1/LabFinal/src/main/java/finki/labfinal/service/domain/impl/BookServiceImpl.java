@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,8 +72,17 @@ public class BookServiceImpl implements BookService {
                     b.setAuthors(book.getAuthors());
                     b.setCategory(book.getCategory());
                     b.setAvailableCopies(book.getAvailableCopies());
+                    b.setDatePublished(book.getDatePublished());
                     return bookRepository.save(b);
                 });
+    }
+
+    @Override
+    public List<Book> findTop10PublishedBefore(LocalDate date) {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        return bookRepository.findTop10ByDatePublishedBeforeOrderByDatePublishedDesc(date);
     }
 
     @Override

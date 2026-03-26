@@ -6,6 +6,7 @@ import finki.labfinal.web.dto.BookSearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +24,9 @@ public interface BookAppService {
 
     Optional<DisplayBookDTO> update(Long id, CreateBookDTO book);
 
-    /**
-     * Rent a book (decrease available copies by 1).
-     */
     Optional<DisplayBookDTO> rent(Long id);
+
+    List<DisplayBookDTO> findTop10PublishedBefore(LocalDate date);
 
     Optional<DisplayBookDTO> deleteById(Long id);
 }

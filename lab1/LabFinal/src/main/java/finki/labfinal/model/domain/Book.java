@@ -4,10 +4,12 @@ package finki.labfinal.model.domain;
 import finki.labfinal.model.enums.Category;
 import finki.labfinal.model.enums.State;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "books")
 public class Book extends BaseAuditableEntity {
 
@@ -35,50 +38,15 @@ public class Book extends BaseAuditableEntity {
     @Column(nullable = false)
     private Integer availableCopies;
 
-    public Book(String name, Category category, State state, Integer availableCopies) {
+    @Column(name = "date_published", columnDefinition = "date")
+    private LocalDate datePublished;
+
+    public Book(String name, Category category, State state, Integer availableCopies, LocalDate datePublished) {
         this.name = name;
         this.category = category;
         this.state = state;
         this.availableCopies = availableCopies;
+        this.datePublished = datePublished;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public List<BookAuth> getAuthors() {
-        return authors;
-    }
-
-    public Integer getAvailableCopies() {
-        return availableCopies;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public void setAuthors(List<BookAuth> authors) {
-        this.authors = authors;
-    }
-
-    public void setAvailableCopies(Integer availableCopies) {
-        this.availableCopies = availableCopies;
-    }
 }

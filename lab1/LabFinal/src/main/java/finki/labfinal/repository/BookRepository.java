@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
@@ -39,4 +41,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 			where (:authorId is null or a.id = :authorId)
 			""")
 	Page<BookExtendedProjection> findExtended(@Param("authorId") Long authorId, Pageable pageable);
+
+	List<Book> findTop10ByDatePublishedBeforeOrderByDatePublishedDesc(LocalDate datePublished);
 }

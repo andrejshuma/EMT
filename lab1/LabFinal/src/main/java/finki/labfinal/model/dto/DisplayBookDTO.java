@@ -4,6 +4,7 @@ import finki.labfinal.model.domain.Book;
 import finki.labfinal.model.enums.Category;
 import finki.labfinal.model.enums.State;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record DisplayBookDTO(
@@ -11,7 +12,8 @@ public record DisplayBookDTO(
         String name,
         Category category,
         State state,
-        Integer availableCopies
+        Integer availableCopies,
+        LocalDate datePublished
 ) {
     public static DisplayBookDTO from(Book book) {
         return new DisplayBookDTO(
@@ -19,7 +21,8 @@ public record DisplayBookDTO(
                 book.getName(),
                 book.getCategory(),
                 book.getState(),
-                book.getAvailableCopies()
+                book.getAvailableCopies(),
+                book.getDatePublished()
         );
     }
 
