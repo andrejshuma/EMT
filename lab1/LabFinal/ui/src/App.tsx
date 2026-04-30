@@ -5,6 +5,8 @@ import { clearToken, isLoggedIn } from './auth.ts'
 export function App() {
     const navigate = useNavigate();
 
+    const loggedIn = isLoggedIn()
+
     function logout() {
         clearToken();
         navigate('/login');
@@ -22,9 +24,9 @@ export function App() {
                     <Button color="inherit" component={Link} to="/books">Books</Button>
                     <Button color="inherit" component={Link} to="/authors">Authors</Button>
                     <Button color="inherit" component={Link} to="/countries">Countries</Button>
-                    <Button color="inherit" component={Link} to="/login">Login</Button>
-
-                    {isLoggedIn() && (
+                    {!loggedIn ? (
+                        <Button color="inherit" component={Link} to="/login">Login</Button>
+                    ) : (
                         <Button color="inherit" onClick={logout}>
                             Logout
                         </Button>
